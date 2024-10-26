@@ -1,4 +1,6 @@
-﻿using Test_Backend.Models.DTOs;
+﻿using System.Net;
+using System.Web.Http;
+using Test_Backend.Models.DTOs;
 using Test_Backend.Models.Entities;
 using Test_Backend.Repositories.Interfaces;
 using Test_Backend.Services.Interfaces;
@@ -25,14 +27,15 @@ namespace Test_Backend.Services.Implementations
             {
                 var product = await _unitOfWork.Products.GetByIdAsync(item.ProductCode);
                 if (product == null)
-                    throw new KeyNotFoundException($"Product with code {item.ProductCode} not found");
+                    throw new HttpResponseException(HttpStatusCode.Forbidden);
 
                 if (!product.IsActive)
                     throw new InvalidOperationException($"Product {item.ProductCode} is inactive");
 
                 var sellingPrice = item.SellingPrice > 0 ? item.SellingPrice : product.SellingPrice;
-                var lineAmount = sellingPrice * item.Quantity;
-                var taxAmount = lineAmount * (product.TaxRate / 100);
+                var linePrice = sellingPrice * item.Quantity;
+                var taxAmount = linePrice * (product.TaxRate / 100);
+                var lineAmount = linePrice - taxAmount;
 
                 var orderItem = new OrderItem
                 {
