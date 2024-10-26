@@ -1,6 +1,15 @@
-﻿namespace Test_Backend.Models.DTOs
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Test_Backend.Models.DTOs
 {
-    public class OrderDto
+    public class OrderDTO
     {
+        public string OrderCode { get; set; }
+        [Required]
+        public string CustomerName { get; set; }
+        [Required]
+        public string CustomerPhone { get; set; }
+        [Required]
+        public List<OrderItemDTO> OrderItems { get; set; }
     }
 }
